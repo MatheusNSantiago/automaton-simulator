@@ -61,11 +61,13 @@ class CanvasCubit extends Cubit<CanvasState> {
   void zoomIn() => zoom(1.1);
   void zoomOut() => zoom(0.9);
   void zoomReset() => transform.value = Matrix4.identity();
-  int getZoom() => (transform.value.getMaxScaleOnAxis() * 100).round();
+  double getZoom() => transform.value.getMaxScaleOnAxis();
 
   void pan(Offset delta) {
     final matrix = transform.value.clone();
-    matrix.translate(delta.dx, delta.dy);
+
+    final zoom = getZoom();
+    matrix.translate(delta.dx / zoom, delta.dy / zoom);
     transform.value = matrix;
   }
 
@@ -209,12 +211,14 @@ class CanvasCubit extends Cubit<CanvasState> {
     }
   }
 
-  void moveSelection(Offset delta) {
+  void moveSelection(Offset delta){
     for (final id in state.selected) {
       final node = state.nodes[id];
       if (node == null) continue;
 
-      node.translate(dx: delta.dx, dy: delta.dy);
+      final zoom = getZoom();
+
+      node.translate(dx: delta.dx / zoom, dy: delta.dy / zoom);
 
       for (final link in state.links.values) {
         final isConnectedWithNode = (link.from == node || link.to == node);

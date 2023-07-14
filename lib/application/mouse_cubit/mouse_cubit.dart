@@ -18,6 +18,12 @@ class MouseCubit extends Cubit<MouseState> {
   }
 
   void up() {
-    return emit(state.copyWith(isPrimaryDown: false, isSecondaryDown: false));
+    return emit(
+      state.copyWith(isPrimaryDown: false, isSecondaryDown: false),
+    );
+  }
+
+  void setZoomInitialPosition(Offset value) {
+    emit(state.copyWith(zoomInitialPosition: value));
   }
 }

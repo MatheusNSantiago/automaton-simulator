@@ -51,15 +51,21 @@ class _CanvasState extends State<Canvas> {
             final keyboard = context.watch<KeyboardCubit>();
             final canvas = context.read<CanvasCubit>();
 
-            final canvasMoveEnabled = mouse.state.isUp;
+            final canvasMoveEnabled = mouse.state.isUp &&
+                !keyboard.state.spacePressed &&
+                !keyboard.state.controlPressed;
 
             return InteractiveViewer(
               transformationController: canvas.getTransformationController(),
               constrained: false,
-              panEnabled: canvasMoveEnabled,
-              scaleEnabled: canvasMoveEnabled,
+              panEnabled: false,
+              scaleEnabled: false,
               onInteractionStart: (details) {
                 mouse.setMousePosition(details.focalPoint);
+
+                if (keyboard.state.controlPressed) {
+                  mouse.setZoomInitialPosition(details.focalPoint);
+                }
               },
               onInteractionUpdate: (details) {
                 mouse.setMousePosition(details.focalPoint);
@@ -72,7 +78,7 @@ class _CanvasState extends State<Canvas> {
                   const double zoomSensitivity = 0.001;
                   final dy = details.focalPointDelta.dy;
                   final scale = 1 + dy * zoomSensitivity;
-                  return canvas.zoom(scale);
+                  return canvas.zoom(scale, mouse.state.zoomInitialPosition);
                 }
 
                 if (canvasMoveEnabled) {

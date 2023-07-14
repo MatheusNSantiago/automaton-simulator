@@ -2,6 +2,7 @@ part of 'mouse_cubit.dart';
 
 class MouseState {
   final Offset position;
+  final Offset zoomInitialPosition;
   final bool isPrimaryDown;
   final bool isSecondaryDown;
   bool get isPrimaryUp => !isPrimaryDown;
@@ -11,17 +12,20 @@ class MouseState {
 
   const MouseState({
     this.position = Offset.zero,
+    this.zoomInitialPosition = Offset.zero,
     this.isPrimaryDown = false,
     this.isSecondaryDown = false,
   });
 
   MouseState copyWith({
     Offset? position,
+    Offset? zoomInitialPosition,
     bool? isPrimaryDown,
     bool? isSecondaryDown,
   }) {
     return MouseState(
       position: position ?? this.position,
+      zoomInitialPosition: zoomInitialPosition ?? this.zoomInitialPosition,
       isPrimaryDown: isPrimaryDown ?? this.isPrimaryDown,
       isSecondaryDown: isSecondaryDown ?? this.isSecondaryDown,
     );
