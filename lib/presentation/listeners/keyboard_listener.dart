@@ -22,28 +22,36 @@ class CanvasKeyboardListener extends StatelessWidget {
       onKeyEvent: (event) {
         if (event is KeyDownEvent) {
           switch (event.logicalKey) {
-            case LogicalKeyboardKey.shift:
+            case LogicalKeyboardKey.shiftLeft:
               keyboardCubit.shiftPressed(true);
-            case LogicalKeyboardKey.control:
+              break;
+            case LogicalKeyboardKey.controlLeft:
               keyboardCubit.controlPressed(true);
+              break;
             case LogicalKeyboardKey.meta:
               keyboardCubit.metaPressed(true);
+              break;
             case LogicalKeyboardKey.space:
               keyboardCubit.spacePressed(true);
+              break;
             default:
               break;
           }
         }
         if (event is KeyUpEvent) {
           switch (event.logicalKey) {
-            case LogicalKeyboardKey.shift:
+            case LogicalKeyboardKey.shiftLeft:
               keyboardCubit.shiftPressed(false);
-            case LogicalKeyboardKey.control:
+              break;
+            case LogicalKeyboardKey.controlLeft:
               keyboardCubit.controlPressed(false);
+              break;
             case LogicalKeyboardKey.meta:
               keyboardCubit.metaPressed(false);
+              break;
             case LogicalKeyboardKey.space:
               keyboardCubit.spacePressed(false);
+              break;
             default:
               break;
           }
