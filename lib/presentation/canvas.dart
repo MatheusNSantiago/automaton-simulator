@@ -11,14 +11,7 @@ import 'marquee.dart';
 import 'node/node_renderer.dart';
 
 class Canvas extends StatefulWidget {
-  final double minScale;
-  final double maxScale;
-
-  const Canvas({
-    super.key,
-    this.minScale = 0.1,
-    this.maxScale = 4.0,
-  });
+  const Canvas({super.key});
 
   @override
   State<Canvas> createState() => _CanvasState();
@@ -51,48 +44,50 @@ class _CanvasState extends State<Canvas> {
             final keyboard = context.watch<KeyboardCubit>();
             final canvas = context.read<CanvasCubit>();
 
-            final canvasMoveEnabled = mouse.state.isUp &&
-                !keyboard.state.spacePressed &&
-                !keyboard.state.controlPressed;
+            final canvasMoveEnabled =
+                mouse.state.isUp && !keyboard.state.controlPressed;
 
-            return InteractiveViewer(
-              transformationController: canvas.getTransformationController(),
-              constrained: false,
-              panEnabled: false,
-              scaleEnabled: false,
-              onInteractionStart: (details) {
-                mouse.setMousePosition(details.focalPoint);
-
-                if (keyboard.state.controlPressed) {
-                  mouse.setZoomInitialPosition(details.focalPoint);
-                }
+            return BlocBuilder<CanvasCubit, CanvasState>(
+              buildWhen: (previous, current) {
+                final zoomChanged = previous.zoom != current.zoom;
+                return zoomChanged;
               },
-              onInteractionUpdate: (details) {
-                mouse.setMousePosition(details.focalPoint);
+              builder: (context, state) {
+                return InteractiveViewer(
+                  transformationController:
+                      canvas.getTransformationController(),
+                  constrained: false,
+                  panEnabled: false,
+                  scaleEnabled: false,
+                  onInteractionStart: (details) {
+                    mouse.setMousePosition(details.focalPoint);
 
-                if (keyboard.state.spacePressed) {
-                  return canvas.pan(details.focalPointDelta);
-                }
+                    if (keyboard.state.controlPressed) {
+                      mouse.setZoomInitialPosition(details.focalPoint);
+                    }
+                  },
+                  onInteractionUpdate: (details) {
+                    mouse.setMousePosition(details.focalPoint);
 
-                if (keyboard.state.controlPressed) {
-                  const double zoomSensitivity = 0.001;
-                  final dy = details.focalPointDelta.dy;
-                  final scale = 1 + dy * zoomSensitivity;
-                  return canvas.zoom(scale, mouse.state.zoomInitialPosition);
-                }
+                    if (keyboard.state.spacePressed) {
+                      return canvas.pan(details.focalPointDelta);
+                    }
 
-                if (canvasMoveEnabled) {
-                  return canvas.pan(details.focalPointDelta);
-                }
+                    if (keyboard.state.controlPressed) {
+                      const double zoomSensitivity = 0.001;
+                      final dy = details.focalPointDelta.dy;
+                      final scale = 1 + dy * zoomSensitivity;
+                      return canvas.zoom(
+                          scale, mouse.state.zoomInitialPosition);
+                    }
 
-                return canvas.moveSelection(details.focalPointDelta);
-              },
-              minScale: widget.minScale,
-              maxScale: widget.maxScale,
-              boundaryMargin: const EdgeInsets.all(double.infinity),
-              child: BlocBuilder<CanvasCubit, CanvasState>(
-                builder: (context, state) {
-                  return SizedBox(
+                    if (canvasMoveEnabled) {
+                      return canvas.pan(details.focalPointDelta);
+                    }
+
+                    return canvas.moveSelection(details.focalPointDelta);
+                  },
+                  child: SizedBox(
                     height: constraints.maxHeight,
                     width: constraints.maxWidth,
                     child: Stack(
@@ -112,18 +107,12 @@ class _CanvasState extends State<Canvas> {
                                 .toList(),
                           ),
                         ),
-                        if (state.isMarqueeActive)
-                          Positioned(
-                            child: Marquee(
-                              start: canvas.toScene(state.marqueeStart!),
-                              end: canvas.toScene(state.marqueeEnd!),
-                            ),
-                          ),
+                        const Marquee(),
                       ],
                     ),
-                  );
-                },
-              ),
+                  ),
+                );
+              },
             );
           },
         ),
