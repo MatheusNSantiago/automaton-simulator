@@ -72,61 +72,67 @@ class _TransitionTextState extends State<TransitionText> {
     return ValueListenableBuilder(
         valueListenable: controller,
         builder: (context, value, _) {
+          final canvas = context.read<CanvasCubit>();
+
           return Container(
             width: width,
             height: 35,
             transform: transform,
-            child: GestureDetector(
-              onTap: focusNode.requestFocus,
-              child: TextField(
-                controller: controller,
-                focusNode: focusNode,
-                cursorHeight: 20,
-                maxLength: 1,
-                onTapOutside: (_) {
-                  focusNode.unfocus(
-                      disposition: UnfocusDisposition.previouslyFocusedChild);
-                      if (value.text.isNotEmpty) {
-                          context.read<CanvasCubit>().changeLinkLabel(widget.link, value.text);
-                      }
-                },
-                onSubmitted: (_) {
-                context.read<CanvasCubit>().changeLinkLabel(widget.link, value.text);
-                  focusNode.unfocus(
-                      disposition: UnfocusDisposition.previouslyFocusedChild);
-                  focusNode.previousFocus();
-                  focusNode.previousFocus();
-                },
-                textAlign: TextAlign.center,
-                decoration: InputDecoration(
-                  counter: const SizedBox(),
-                  border: const OutlineInputBorder(borderSide: BorderSide.none),
-                  filled: true,
-                  errorText: value.text.isEmpty ? '' : null,
-                  errorStyle: const TextStyle(height: 0),
-                  errorBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(5),
-                    borderSide: const BorderSide(
-                      color: Colors.red,
-                      style: BorderStyle.solid,
-                      width: 1.25,
-                    ),
+            child: TextField(
+              controller: controller,
+              focusNode: focusNode,
+              cursorHeight: 20,
+              maxLength: 1,
+              onTap: () {
+                // coloca o cursor no final do texto
+                controller.selection = TextSelection.fromPosition(
+                  TextPosition(offset: controller.text.length),
+                );
+                canvas.setSelectedLink(null);
+              },
+              onTapOutside: (_) {
+                focusNode.unfocus(
+                    disposition: UnfocusDisposition.previouslyFocusedChild);
+                if (value.text.isNotEmpty) {
+                  canvas.changeLinkLabel(widget.link, value.text);
+                }
+              },
+              onSubmitted: (_) {
+                canvas.changeLinkLabel(widget.link, value.text);
+                focusNode.unfocus(
+                    disposition: UnfocusDisposition.previouslyFocusedChild);
+                focusNode.previousFocus();
+                focusNode.previousFocus();
+              },
+              textAlign: TextAlign.center,
+              decoration: InputDecoration(
+                counter: const SizedBox(),
+                border: const OutlineInputBorder(borderSide: BorderSide.none),
+                filled: true,
+                errorText: value.text.isEmpty ? '' : null,
+                errorStyle: const TextStyle(height: 0),
+                errorBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(5),
+                  borderSide: const BorderSide(
+                    color: Colors.red,
+                    style: BorderStyle.solid,
+                    width: 1.25,
                   ),
-                  contentPadding: EdgeInsets.zero,
                 ),
-                style: TextStyle(
-                  color: Colors.white,
-                  height: 1.1,
-                  fontSize: 17,
-                  fontWeight: FontWeight.bold,
-                  shadows: [
-                    Shadow(
-                      color: Colors.white.withOpacity(0.7),
-                      offset: const Offset(0, 1),
-                      blurRadius: 6,
-                    ),
-                  ],
-                ),
+                contentPadding: EdgeInsets.zero,
+              ),
+              style: TextStyle(
+                color: Colors.white,
+                height: 1.1,
+                fontSize: 17,
+                fontWeight: FontWeight.bold,
+                shadows: [
+                  Shadow(
+                    color: Colors.white.withOpacity(0.7),
+                    offset: const Offset(0, 1),
+                    blurRadius: 6,
+                  ),
+                ],
               ),
             ),
           );
