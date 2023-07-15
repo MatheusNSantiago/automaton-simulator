@@ -3,15 +3,33 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class CanvasKeyboardListener extends StatelessWidget {
+class CanvasKeyboardListener extends StatefulWidget {
   final Widget child;
-  final FocusNode focusNode;
 
   const CanvasKeyboardListener({
     super.key,
-    required this.focusNode,
     required this.child,
   });
+
+  @override
+  State<CanvasKeyboardListener> createState() => _CanvasKeyboardListenerState();
+}
+
+class _CanvasKeyboardListenerState extends State<CanvasKeyboardListener> {
+  late FocusNode focusNode;
+
+  @override
+  void initState() {
+    super.initState();
+    focusNode = FocusNode();
+    focusNode.requestFocus();
+  }
+
+  @override
+  void dispose() {
+    focusNode.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +75,7 @@ class CanvasKeyboardListener extends StatelessWidget {
           }
         }
       },
-      child: child,
+      child: widget.child,
     );
   }
 }

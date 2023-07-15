@@ -10,33 +10,12 @@ import 'listeners/mouse_listener.dart';
 import 'marquee.dart';
 import 'node/node_renderer.dart';
 
-class Canvas extends StatefulWidget {
+class Canvas extends StatelessWidget {
   const Canvas({super.key});
-
-  @override
-  State<Canvas> createState() => _CanvasState();
-}
-
-class _CanvasState extends State<Canvas> {
-  late FocusNode focusNode;
-
-  @override
-  void initState() {
-    super.initState();
-    focusNode = FocusNode();
-    focusNode.requestFocus();
-  }
-
-  @override
-  void dispose() {
-    focusNode.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
     return CanvasKeyboardListener(
-      focusNode: focusNode,
       child: CanvasMouseListener(
         child: LayoutBuilder(
           builder: (context, constraints) {
@@ -92,20 +71,18 @@ class _CanvasState extends State<Canvas> {
                     width: constraints.maxWidth,
                     child: Stack(
                       clipBehavior: Clip.none,
+                      fit: StackFit.expand,
                       children: [
-                        Positioned.fill(
-                            child: LinkRenderer(links: state.linkList)),
-                        Positioned.fill(
-                          child: CustomMultiChildLayout(
-                            delegate: CanvasNodesDelegate(state.nodesList),
-                            children: state.nodesList
-                                .map((e) => LayoutId(
-                                      key: e.key,
-                                      id: e,
-                                      child: NodeRenderer(node: e),
-                                    ))
-                                .toList(),
-                          ),
+                        LinkRenderer(links: state.linkList),
+                        CustomMultiChildLayout(
+                          delegate: CanvasNodesDelegate(state.nodesList),
+                          children: state.nodesList
+                              .map((e) => LayoutId(
+                                    key: e.key,
+                                    id: e,
+                                    child: NodeRenderer(node: e),
+                                  ))
+                              .toList(),
                         ),
                         const Marquee(),
                       ],
