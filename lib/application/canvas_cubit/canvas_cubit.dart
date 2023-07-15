@@ -30,22 +30,22 @@ class CanvasCubit extends Cubit<CanvasState> {
   Offset toScene(Offset global) => transform.toScene(global);
   TransformationController getTransformationController() => transform;
 
-  Rect getMaxSize() {
-    Rect rect = Rect.zero;
-    for (final node in state.nodesList) {
-      rect = Rect.fromLTRB(
-        min(rect.left, node.rect.left),
-        min(rect.top, node.rect.top),
-        max(rect.right, node.rect.right),
-        max(rect.bottom, node.rect.bottom),
-      );
-    }
-    return rect;
-  }
+  // Rect getMaxSize() {
+  //   Rect rect = Rect.zero;
+  //   for (final node in state.nodesList) {
+  //     rect = Rect.fromLTRB(
+  //       min(rect.left, node.rect.left),
+  //       min(rect.top, node.rect.top),
+  //       max(rect.right, node.rect.right),
+  //       max(rect.bottom, node.rect.bottom),
+  //     );
+  //   }
+  //   return rect;
+  // }
 
   void zoom(double delta, [Offset? mousePosition]) {
     var matrix = transform.value;
-    final newZoom = (delta - 1) + getZoom();
+    final newZoom = (delta - 1) + state.zoom;
 
     final isBetweenLimits = newZoom >= 0.5 && newZoom <= 2.25;
     if (!isBetweenLimits) return;
@@ -78,14 +78,25 @@ class CanvasCubit extends Cubit<CanvasState> {
 
   void zoomIn() => zoom(1.1);
   void zoomOut() => zoom(0.9);
-  void zoomReset() => transform.value = Matrix4.identity();
-  double getZoom() => transform.value.getMaxScaleOnAxis();
 
   void pan(Offset delta) {
+    const maxW = 500, maxH = 400;
     final matrix = transform.value.clone();
 
-    final zoom = getZoom();
-    matrix.translate(delta.dx / zoom, delta.dy / zoom);
+    var dx = delta.dx / state.zoom;
+    var dy = delta.dy / state.zoom;
+
+    final translation = transform.value.getTranslation();
+    final x = translation.x + dx;
+    final y = translation.y + dy;
+
+    final isInVerticalBounds = (-maxH <= y) && (y <= maxH);
+    final isInHorizontalBounds = (-maxW <= x) && (x <= maxW);
+
+    if (!isInHorizontalBounds) dx = 0;
+    if (!isInVerticalBounds) dy = 0;
+
+    matrix.translate(dx, dy);
     transform.value = matrix;
   }
 
@@ -239,9 +250,7 @@ class CanvasCubit extends Cubit<CanvasState> {
       final node = state.nodes[id];
       if (node == null) continue;
 
-      final zoom = getZoom();
-
-      node.translate(dx: delta.dx / zoom, dy: delta.dy / zoom);
+      node.translate(dx: delta.dx / state.zoom, dy: delta.dy / state.zoom);
 
       for (final link in state.links.values) {
         final isConnectedWithNode = (link.from == node || link.to == node);
