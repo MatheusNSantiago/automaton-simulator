@@ -5,44 +5,39 @@ import 'package:automata_simulator/presentation/menus/components/vertical_divide
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class ZoomMenu extends StatefulWidget {
+class ZoomMenu extends StatelessWidget {
   const ZoomMenu({super.key});
 
   @override
-  State<ZoomMenu> createState() => _ZoomMenuState();
-}
-
-class _ZoomMenuState extends State<ZoomMenu> {
-  @override
   Widget build(BuildContext context) {
-    final canvas = context.read<CanvasCubit>();
+    return BlocBuilder<CanvasCubit, CanvasState>(
+      buildWhen: (previous, current) => previous.zoom != current.zoom,
+      builder: (context, state) {
+        final canvas = context.read<CanvasCubit>();
 
-    return MenuContainer(
-      children: [
-        CustomIconButton(
-          onPressed: () {
-            canvas.zoomOut();
-            setState(() {});
-          },
-          icon: Icons.remove_rounded,
-        ),
-        const CustomVerticalDivider(),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: SizedBox(
-            width: 40,
-            child: Center(child: Text("${canvas.getZoom()}%")),
-          ),
-        ),
-        const CustomVerticalDivider(),
-        CustomIconButton(
-          onPressed: () {
-            canvas.zoomIn();
-            setState(() {});
-          },
-          icon: Icons.add_rounded,
-        ),
-      ],
+        return MenuContainer(
+          children: [
+            CustomIconButton(
+              onPressed: canvas.zoomOut,
+              icon: Icons.remove_rounded,
+            ),
+            const CustomVerticalDivider(),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: SizedBox(
+                width: 40,
+                child:
+                    Center(child: Text("${(state.zoom * 100).round()}%")),
+              ),
+            ),
+            const CustomVerticalDivider(),
+            CustomIconButton(
+              onPressed: canvas.zoomIn,
+              icon: Icons.add_rounded,
+            ),
+          ],
+        );
+      },
     );
   }
 }

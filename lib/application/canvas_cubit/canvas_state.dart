@@ -5,6 +5,7 @@ class CanvasState {
   final Set<String> hovered;
   final Map<String, Node> nodes;
   final Map<String, Link> links;
+  final double zoom;
 
   Offset? marqueeStart, marqueeEnd;
   Point? linkEnd;
@@ -16,6 +17,7 @@ class CanvasState {
     this.hovered = const {},
     this.nodes = const {},
     this.links = const {},
+    this.zoom = 1,
     this.marqueeStart,
     this.marqueeEnd,
     this.linkEnd,
@@ -34,6 +36,7 @@ class CanvasState {
     Map<String, Link>? links,
     Set<String>? selected,
     Set<String>? hovered,
+    double? zoom,
     Optional<Offset?> marqueeStart = const Optional(),
     Optional<Offset?> marqueeEnd = const Optional(),
     Optional<Node?> linkStart = const Optional(),
@@ -45,6 +48,7 @@ class CanvasState {
       links: links ?? this.links,
       selected: selected ?? this.selected,
       hovered: hovered ?? this.hovered,
+      zoom: zoom ?? this.zoom,
       marqueeStart:
           marqueeStart.isValid ? marqueeStart.value : this.marqueeStart,
       linkEnd: linkEnd.isValid ? linkEnd.value : this.linkEnd,

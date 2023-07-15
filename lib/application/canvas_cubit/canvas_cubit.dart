@@ -44,15 +44,33 @@ class CanvasCubit extends Cubit<CanvasState> {
   }
 
   void zoom(double delta, [Offset? mousePosition]) {
-    final matrix = transform.value.clone();
+    var matrix = transform.value;
+    final newZoom = (delta - 1) + getZoom();
 
-    if (mousePosition != null) {
+    final isBetweenLimits = newZoom >= 0.5 && newZoom <= 2.25;
+    if (!isBetweenLimits) return;
+
+    emit(state.copyWith(zoom: newZoom));
+
+    final isFromMouse = mousePosition != null;
+    if (isFromMouse) {
       final local = toScene(mousePosition);
       matrix.translate(local.dx, local.dy);
       matrix.scale(delta, delta);
       matrix.translate(-local.dx, -local.dy);
     } else {
-      matrix.scale(delta, delta);
+      final translation = matrix.getTranslation();
+
+      // reseta tudo. O zoom será calculado em relação ao canvas inicial, e não ao atual
+      // Antes: zoom(1.1) seguido de zoom(0.9) -> o zoom final seria 0.99
+      // Agora: zoom(1.1) seguido de zoom(0.9) -> o zoom final é 1
+      matrix.setIdentity();
+
+      // Restaura a posição da matriz
+      matrix.translate(translation.x, translation.y);
+
+      // Calcula o novo zoom
+      matrix.scale(newZoom, newZoom);
     }
 
     transform.value = matrix;
@@ -139,6 +157,11 @@ class CanvasCubit extends Cubit<CanvasState> {
     emit(state);
   }
 
+  void clearSelectedLink() {
+    state.selectedLink = null;
+    emit(state);
+  }
+
   // ╭──────────────────────────────────────────────────────────╮
   // │                          Marque                          │
   // ╰──────────────────────────────────────────────────────────╯
@@ -211,7 +234,7 @@ class CanvasCubit extends Cubit<CanvasState> {
     }
   }
 
-  void moveSelection(Offset delta){
+  void moveSelection(Offset delta) {
     for (final id in state.selected) {
       final node = state.nodes[id];
       if (node == null) continue;
