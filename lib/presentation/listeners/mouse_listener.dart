@@ -30,8 +30,9 @@ class CanvasMouseListener extends StatelessWidget {
           /* Seleciona um link  */
           final selectedLink = canvas.getLinkCloseToPoint(
             details.localPosition,
-            minimumDistance: 10,
+            minimumDistance: 15,
           );
+
           final oldSelectedLink = canvas.state.selectedLink;
           if (selectedLink != oldSelectedLink) {
             final clickWasNotOnALinkPath = selectedLink == null;
@@ -41,9 +42,13 @@ class CanvasMouseListener extends StatelessWidget {
               //   1. deselecionar o link atual
               //   2. mover o control point do link atual
 
-              final isTheControlPoint = oldSelectedLink!.cp
+              final clickWasInControlPoint = oldSelectedLink!.cp
                   .isCloseTo(details.localPosition.toPoint());
-              if (!isTheControlPoint) canvas.setSelectedLink(selectedLink);
+              if (!clickWasInControlPoint) {
+                canvas.clearSelectedLink(); // 1. deselecionar o link atual
+              }
+              // Se foi em um control point, não deseleciona o link atual
+              // descelecionar o link -> Control point ia sumir
             } else {
               canvas.setSelectedLink(selectedLink);
             }
