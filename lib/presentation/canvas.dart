@@ -73,7 +73,7 @@ class Canvas extends StatelessWidget {
                       clipBehavior: Clip.none,
                       fit: StackFit.expand,
                       children: [
-                        LinkRenderer(links: state.linkList),
+                        const LinkRenderer(),
                         CustomMultiChildLayout(
                           delegate: CanvasNodesDelegate(state.nodesList),
                           children: state.nodesList
