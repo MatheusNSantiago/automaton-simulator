@@ -15,8 +15,8 @@ class CanvasState {
   CanvasState({
     this.selected = const {},
     this.hovered = const {},
-    this.nodes = const {},
-    this.links = const {},
+    required this.nodes,
+    required this.links,
     this.zoom = 1,
     this.marqueeStart,
     this.marqueeEnd,
