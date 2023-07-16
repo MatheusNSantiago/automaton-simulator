@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../domain/model/node.dart';
+import '../../../domain/model/node.dart';
+
 
 class CanvasNodesDelegate extends MultiChildLayoutDelegate {
   CanvasNodesDelegate(this.nodes);
