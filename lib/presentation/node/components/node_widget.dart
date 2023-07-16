@@ -11,8 +11,8 @@ class NodeWidget extends StatelessWidget {
     final colors = Theme.of(context).colorScheme;
     final fonts = Theme.of(context).textTheme;
 
-    return Positioned.fill(
-      key: key,
+    return MouseRegion(
+      cursor: SystemMouseCursors.allScroll,
       child: Container(
         decoration: BoxDecoration(
           color: node.color,
