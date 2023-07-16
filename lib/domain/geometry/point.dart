@@ -19,6 +19,12 @@ class Point {
     return distanceTo(point) < distance;
   }
 
+  Map<String, double> toJson() => {'x': x, 'y': y};
+
+  factory Point.fromJson(Map<String, dynamic> json) {
+    return Point(json['x'], json['y']);
+  }
+
   static fromOffset(Offset? offset) {
     if (offset == null) return null;
     return Point(offset.dx, offset.dy);

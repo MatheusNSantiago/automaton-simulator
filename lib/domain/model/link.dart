@@ -9,39 +9,52 @@ class Link {
   late Point _cp;
   String? label;
   bool _cpWasMoved = false;
-  String get id => '${from.id} -> ${to.id}';
+  String get id => '${from.label} -> ${to.label}';
 
   Link({
     required this.from,
     required this.to,
     this.label,
+    Point? cp,
   }) {
-    cp = Point.middle(from.center, to.center);
+    this.cp = cp ?? Point.middle(from.center, to.center);
   }
 
-  // ╭──────────────────────────────────────────────────────────╮
-  // │                      Controll Point                      │
-  // ╰──────────────────────────────────────────────────────────╯
+  bool hasNode(Node node) => (from == node) || (to == node);
 
-  set cp(Point cp) {
-    _cp = cp;
+  void updatePath() {
+    if (!_cpWasMoved) {
+      // Se o CP não mudou, então quem mudou foi a posição dos nodes e o CP deve ser atualizado
+      // pra ser o ponto médio deles
+      cp = Point.middle(from.center, to.center);
+    }
     path = QuadraticBezier(from.center, cp, to.center);
   }
 
   Point get cp => _cp;
+  set cp(Point cp) {
+    _cp = cp;
+    path = QuadraticBezier(from.center, cp, to.center);
+  }
 
   void translateControlPoint({double dx = 0, double dy = 0}) {
     cp = cp.translate(dx: dx, dy: dy);
     _cpWasMoved = true;
   }
 
-  // ╾───────────────────────────────────────────────────────────────────────────────────╼
+  Map<String, dynamic> toJson() => {
+        'from': from.label,
+        'to': to.label,
+        'cp': cp.toJson(),
+        'label': label,
+      };
 
-  bool hasNode(Node node) => from == node || to == node;
-
-  void update() {
-    if (!_cpWasMoved) cp = Point.middle(from.center, to.center);
-
-    path = QuadraticBezier(from.center, cp, to.center);
+  factory Link.fromJson(Map<String, dynamic> json, Map<String, Node> nodes) {
+    return Link(
+      from: nodes[json['from']]!,
+      to: nodes[json['to']]!,
+      cp: Point.fromJson(json['cp']),
+      label: json['label'],
+    );
   }
 }
