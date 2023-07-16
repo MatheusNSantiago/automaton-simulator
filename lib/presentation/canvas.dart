@@ -1,6 +1,5 @@
 import 'package:automata_simulator/application/canvas_cubit/canvas_cubit.dart';
 import 'package:automata_simulator/application/keyboard_cubit/keyboard_cubit.dart';
-import 'package:automata_simulator/presentation/widgets/delegate.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../application/mouse_cubit/mouse_cubit.dart';
@@ -57,34 +56,27 @@ class Canvas extends StatelessWidget {
                       final dy = details.focalPointDelta.dy;
                       final scale = 1 + dy * zoomSensitivity;
                       return canvas.zoom(
-                          scale, mouse.state.zoomInitialPosition);
+                        scale,
+                        mouse.state.zoomInitialPosition,
+                      );
                     }
 
                     if (canvasMoveEnabled) {
                       return canvas.pan(details.focalPointDelta);
                     }
 
-                    return canvas.moveSelection(details.focalPointDelta);
+                    canvas.moveSelection(details.focalPointDelta);
                   },
                   child: SizedBox(
                     height: constraints.maxHeight,
                     width: constraints.maxWidth,
-                    child: Stack(
+                    child: const Stack(
                       clipBehavior: Clip.none,
                       fit: StackFit.expand,
                       children: [
-                        const LinkRenderer(),
-                        CustomMultiChildLayout(
-                          delegate: CanvasNodesDelegate(state.nodesList),
-                          children: state.nodesList
-                              .map((e) => LayoutId(
-                                    key: e.key,
-                                    id: e,
-                                    child: NodeRenderer(node: e),
-                                  ))
-                              .toList(),
-                        ),
-                        const Marquee(),
+                        LinkRenderer(),
+                        NodeRenderer(),
+                        Marquee(),
                       ],
                     ),
                   ),
