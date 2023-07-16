@@ -1,47 +1,38 @@
-import 'dart:math';
-
 import 'package:automata_simulator/constants.dart';
+import 'package:automata_simulator/domain/canvas/canvas.dart';
+import 'package:automata_simulator/domain/canvas/i_canvas_repository.dart';
 import 'package:automata_simulator/domain/geometry/point.dart';
 import 'package:automata_simulator/domain/model/link.dart';
 import 'package:automata_simulator/domain/model/node.dart';
 import 'package:bloc/bloc.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:injectable/injectable.dart';
 
 import '../../utils.dart';
 part 'canvas_state.dart';
 
-final n = [
-  Node(key: UniqueKey(), label: 'Q0', position: Point(100, 300)),
-  Node(key: UniqueKey(), label: 'Q1', position: Point(280, 300)),
-].asMap().map((key, node) => MapEntry(node.id, node));
-
-final n0 = n.values.toList()[0];
-final n1 = n.values.toList()[1];
-final l = [
-  Link(from: n0, to: n1, label: 'a'),
-].asMap().map((key, link) => MapEntry(link.id, link));
-
+@injectable
 class CanvasCubit extends Cubit<CanvasState> {
+  final ICanvasRepository repository;
   final TransformationController transform = TransformationController();
 
-  CanvasCubit() : super(CanvasState(nodes: n, links: l));
+  CanvasCubit(this.repository) : super(CanvasState());
 
   Offset toScene(Offset global) => transform.toScene(global);
   TransformationController getTransformationController() => transform;
 
-  // Rect getMaxSize() {
-  //   Rect rect = Rect.zero;
-  //   for (final node in state.nodesList) {
-  //     rect = Rect.fromLTRB(
-  //       min(rect.left, node.rect.left),
-  //       min(rect.top, node.rect.top),
-  //       max(rect.right, node.rect.right),
-  //       max(rect.bottom, node.rect.bottom),
-  //     );
-  //   }
-  //   return rect;
-  // }
+  Future<void> writeCurrentState() async {
+    final canvas = Canvas(nodes: state.nodes, links: state.links);
+
+    await repository.saveCanvas(canvas);
+  }
+
+  Future<void> readCanvas() async {
+    final canvas = await repository.getCanvas();
+
+    emit(state.copyWith(nodes: canvas.nodes, links: canvas.links));
+  }
 
   void zoom(double delta, [Offset? mousePosition]) {
     var matrix = transform.value;
@@ -107,12 +98,11 @@ class CanvasCubit extends Cubit<CanvasState> {
         : 'Q${int.parse(lastLabel.substring(1)) + 1}';
 
     Node node = Node(
-      key: UniqueKey(),
       label: newLabel,
       position: toScene(position).toPoint(),
     ).translate(dx: -kNodeRadius, dy: -kNodeRadius);
 
-    state.nodes[node.id] = node;
+    state.nodes[node.label] = node;
     emit(state);
   }
 
@@ -135,9 +125,10 @@ class CanvasCubit extends Cubit<CanvasState> {
     );
   }
 
+  // TODO: implementar
   void changeLinkLabel(Link link, String label) {
-    state.links[link.id]!.label = label;
-    emit(state);
+    // state.links[link.id]!.label = label;
+    // emit(state);
   }
 
   void updateTemporaryLink({required Offset end}) {
@@ -203,7 +194,7 @@ class CanvasCubit extends Cubit<CanvasState> {
 
     for (final node in state.nodesList) {
       if (rect.overlaps(node.rect)) {
-        selection.add(node.id);
+        selection.add(node.label);
       }
     }
     if (selection.isNotEmpty) {
@@ -215,8 +206,8 @@ class CanvasCubit extends Cubit<CanvasState> {
 
   // ╾───────────────────────────────────────────────────────────────────────────────────╼
 
-  bool isSelected(String id) => state.selected.contains(id);
-  bool isHovered(String id) => state.hovered.contains(id);
+  bool isNodeSelected(Node node) => state.selected.contains(node.label);
+  bool isNodeHovered(Node node) => state.hovered.contains(node.label);
 
   List<Node> getSelectedNodes() {
     final nodes = <Node>[];
@@ -236,7 +227,7 @@ class CanvasCubit extends Cubit<CanvasState> {
   void checkSelection(Offset offset, [bool hover = false]) {
     final selection = <String>[];
     final node = getNodeOnPosition(offset);
-    if (node != null) selection.add(node.id);
+    if (node != null) selection.add(node.label);
 
     if (selection.isNotEmpty) {
       setSelection({selection.last}, hover);
@@ -256,7 +247,7 @@ class CanvasCubit extends Cubit<CanvasState> {
         final isConnectedWithNode = (link.from == node || link.to == node);
 
         if (isConnectedWithNode) {
-          link.update();
+          link.updatePath();
         }
       }
     }
