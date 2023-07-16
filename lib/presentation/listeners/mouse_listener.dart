@@ -91,7 +91,7 @@ class CanvasMouseListener extends StatelessWidget {
       },
       onPointerCancel: (details) => mouse.up(),
       onPointerHover: (details) {
-        mouse.setMousePosition(details.localPosition);
+        // mouse.setMousePosition(details.localPosition);
       },
       onPointerMove: (details) {
         if (canvas.state.isTemporaryLinkActive) {
@@ -99,7 +99,7 @@ class CanvasMouseListener extends StatelessWidget {
           return;
         }
 
-        canvas.checkSelection(mouse.state.position, true);
+        canvas.checkSelection(details.localPosition, true);
         canvas.setMarquee(
           start: canvas.state.marqueeStart,
           end: details.localPosition,

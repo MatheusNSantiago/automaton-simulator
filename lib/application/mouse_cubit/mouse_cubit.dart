@@ -5,8 +5,6 @@ part 'mouse_state.dart';
 class MouseCubit extends Cubit<MouseState> {
   MouseCubit() : super(const MouseState());
 
-  void setMousePosition(Offset value) => emit(state.copyWith(position: value));
-
   void down(int button) {
     switch (button) {
       case kPrimaryMouseButton:
