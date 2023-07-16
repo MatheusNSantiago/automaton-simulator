@@ -18,7 +18,10 @@ class Canvas extends StatelessWidget {
       child: CanvasMouseListener(
         child: LayoutBuilder(
           builder: (context, constraints) {
+            final zoomInitialPosition = context
+                .select<MouseCubit, Offset>((m) => m.state.zoomInitialPosition);
             final mouse = context.watch<MouseCubit>();
+
             final keyboard = context.watch<KeyboardCubit>();
             final canvas = context.read<CanvasCubit>();
 
@@ -31,53 +34,58 @@ class Canvas extends StatelessWidget {
                 return zoomChanged;
               },
               builder: (context, state) {
-                return InteractiveViewer(
-                  transformationController:
-                      canvas.getTransformationController(),
-                  constrained: false,
-                  panEnabled: false,
-                  scaleEnabled: false,
-                  onInteractionStart: (details) {
-                    mouse.setMousePosition(details.focalPoint);
+                final isSpacePressed = keyboard.state.spacePressed;
+                final isGrabbingCanvas =
+                    mouse.state.isPrimaryDown && isSpacePressed;
 
-                    if (keyboard.state.controlPressed) {
-                      mouse.setZoomInitialPosition(details.focalPoint);
-                    }
-                  },
-                  onInteractionUpdate: (details) {
-                    mouse.setMousePosition(details.focalPoint);
+                return MouseRegion(
+                  hitTestBehavior: HitTestBehavior.opaque,
+                  cursor: isGrabbingCanvas
+                      ? SystemMouseCursors.grabbing
+                      : isSpacePressed
+                          ? SystemMouseCursors.grab
+                          : MouseCursor.defer,
+                  child: InteractiveViewer(
+                    transformationController:
+                        canvas.getTransformationController(),
+                    constrained: false,
+                    panEnabled: false,
+                    scaleEnabled: false,
+                    onInteractionStart: (details) {
+                      if (keyboard.state.controlPressed) {
+                        mouse.setZoomInitialPosition(details.focalPoint);
+                      }
+                    },
+                    onInteractionUpdate: (details) {
+                      if (keyboard.state.spacePressed) {
+                        return canvas.pan(details.focalPointDelta);
+                      }
 
-                    if (keyboard.state.spacePressed) {
-                      return canvas.pan(details.focalPointDelta);
-                    }
+                      if (keyboard.state.controlPressed) {
+                        const double zoomSensitivity = 0.001;
+                        final dy = details.focalPointDelta.dy;
+                        final scale = 1 + dy * zoomSensitivity;
+                        return canvas.zoom(scale, zoomInitialPosition);
+                      }
 
-                    if (keyboard.state.controlPressed) {
-                      const double zoomSensitivity = 0.001;
-                      final dy = details.focalPointDelta.dy;
-                      final scale = 1 + dy * zoomSensitivity;
-                      return canvas.zoom(
-                        scale,
-                        mouse.state.zoomInitialPosition,
-                      );
-                    }
+                      if (canvasMoveEnabled) {
+                        return canvas.pan(details.focalPointDelta);
+                      }
 
-                    if (canvasMoveEnabled) {
-                      return canvas.pan(details.focalPointDelta);
-                    }
-
-                    canvas.moveSelection(details.focalPointDelta);
-                  },
-                  child: SizedBox(
-                    height: constraints.maxHeight,
-                    width: constraints.maxWidth,
-                    child: const Stack(
-                      clipBehavior: Clip.none,
-                      fit: StackFit.expand,
-                      children: [
-                        LinkRenderer(),
-                        NodeRenderer(),
-                        Marquee(),
-                      ],
+                      canvas.moveSelection(details.focalPointDelta);
+                    },
+                    child: SizedBox(
+                      height: constraints.maxHeight,
+                      width: constraints.maxWidth,
+                      child: const Stack(
+                        clipBehavior: Clip.none,
+                        fit: StackFit.expand,
+                        children: [
+                          LinkRenderer(),
+                          NodeRenderer(),
+                          Marquee(),
+                        ],
+                      ),
                     ),
                   ),
                 );

@@ -1,5 +1,7 @@
+import 'package:automata_simulator/application/keyboard_cubit/keyboard_cubit.dart';
 import 'package:automata_simulator/domain/model/node.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class NodeWidget extends StatelessWidget {
   final Node node;
@@ -10,9 +12,11 @@ class NodeWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     final fonts = Theme.of(context).textTheme;
+    final spacePressed = context
+        .select<KeyboardCubit, bool>((cubit) => cubit.state.spacePressed);
 
     return MouseRegion(
-      cursor: SystemMouseCursors.allScroll,
+      cursor: spacePressed ? MouseCursor.defer : SystemMouseCursors.allScroll,
       child: Container(
         decoration: BoxDecoration(
           color: node.color,
