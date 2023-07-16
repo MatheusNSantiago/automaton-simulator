@@ -26,8 +26,7 @@ class ZoomMenu extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: SizedBox(
                 width: 40,
-                child:
-                    Center(child: Text("${(state.zoom * 100).round()}%")),
+                child: Center(child: Text("${(state.zoom * 100).round()}%")),
               ),
             ),
             const CustomVerticalDivider(),

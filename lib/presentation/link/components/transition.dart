@@ -101,8 +101,6 @@ class _TransitionTextState extends State<TransitionText> {
                 canvas.changeLinkLabel(widget.link, value.text);
                 focusNode.unfocus(
                     disposition: UnfocusDisposition.previouslyFocusedChild);
-                focusNode.previousFocus();
-                focusNode.previousFocus();
               },
               textAlign: TextAlign.center,
               decoration: InputDecoration(

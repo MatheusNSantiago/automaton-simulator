@@ -3,25 +3,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../application/canvas_cubit/canvas_cubit.dart';
+
 class CanvasKeyboardListener extends StatefulWidget {
   final Widget child;
 
-  const CanvasKeyboardListener({
-    super.key,
-    required this.child,
-  });
+  const CanvasKeyboardListener({super.key, required this.child});
 
   @override
   State<CanvasKeyboardListener> createState() => _CanvasKeyboardListenerState();
 }
 
 class _CanvasKeyboardListenerState extends State<CanvasKeyboardListener> {
-  late FocusNode focusNode;
+  late FocusScopeNode focusNode;
 
   @override
   void initState() {
     super.initState();
-    focusNode = FocusNode();
+    focusNode = FocusScopeNode();
     focusNode.requestFocus();
   }
 
@@ -33,49 +32,57 @@ class _CanvasKeyboardListenerState extends State<CanvasKeyboardListener> {
 
   @override
   Widget build(BuildContext context) {
-    KeyboardCubit keyboardCubit = context.read<KeyboardCubit>();
+    KeyboardCubit keyboard = context.read<KeyboardCubit>();
+    final canvas = context.read<CanvasCubit>();
 
-    return KeyboardListener(
-      focusNode: focusNode,
-      onKeyEvent: (event) {
-        if (event is KeyDownEvent) {
-          switch (event.logicalKey) {
-            case LogicalKeyboardKey.shiftLeft:
-              keyboardCubit.shiftPressed(true);
-              break;
-            case LogicalKeyboardKey.controlLeft:
-              keyboardCubit.controlPressed(true);
-              break;
-            case LogicalKeyboardKey.meta:
-              keyboardCubit.metaPressed(true);
-              break;
-            case LogicalKeyboardKey.space:
-              keyboardCubit.spacePressed(true);
-              break;
-            default:
-              break;
-          }
-        }
-        if (event is KeyUpEvent) {
-          switch (event.logicalKey) {
-            case LogicalKeyboardKey.shiftLeft:
-              keyboardCubit.shiftPressed(false);
-              break;
-            case LogicalKeyboardKey.controlLeft:
-              keyboardCubit.controlPressed(false);
-              break;
-            case LogicalKeyboardKey.meta:
-              keyboardCubit.metaPressed(false);
-              break;
-            case LogicalKeyboardKey.space:
-              keyboardCubit.spacePressed(false);
-              break;
-            default:
-              break;
-          }
-        }
+    return Shortcuts(
+      shortcuts: <ShortcutActivator, Intent>{
+        const SingleActivator(LogicalKeyboardKey.equal, control: true): VoidCallbackIntent(canvas.zoomIn),
+        const SingleActivator(LogicalKeyboardKey.minus, control: true): VoidCallbackIntent(canvas.zoomOut),
+        const SingleActivator(LogicalKeyboardKey.digit0, control: true): VoidCallbackIntent(canvas.resetZoom),
       },
-      child: widget.child,
+      child: KeyboardListener(
+        focusNode: focusNode,
+        onKeyEvent: (event) {
+          if (event is KeyDownEvent) {
+            switch (event.logicalKey) {
+              case LogicalKeyboardKey.shiftLeft:
+                keyboard.shiftPressed(true);
+                break;
+              case LogicalKeyboardKey.controlLeft:
+                keyboard.controlPressed(true);
+                break;
+              case LogicalKeyboardKey.meta:
+                keyboard.metaPressed(true);
+                break;
+              case LogicalKeyboardKey.space:
+                keyboard.spacePressed(true);
+                break;
+              default:
+                break;
+            }
+          }
+          if (event is KeyUpEvent) {
+            switch (event.logicalKey) {
+              case LogicalKeyboardKey.shiftLeft:
+                keyboard.shiftPressed(false);
+                break;
+              case LogicalKeyboardKey.controlLeft:
+                keyboard.controlPressed(false);
+                break;
+              case LogicalKeyboardKey.meta:
+                keyboard.metaPressed(false);
+                break;
+              case LogicalKeyboardKey.space:
+                keyboard.spacePressed(false);
+                break;
+              default:
+                break;
+            }
+          }
+        },
+        child: widget.child,
+      ),
     );
   }
 }

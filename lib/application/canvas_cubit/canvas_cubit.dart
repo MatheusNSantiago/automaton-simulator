@@ -12,12 +12,23 @@ import 'package:injectable/injectable.dart';
 import '../../utils.dart';
 part 'canvas_state.dart';
 
+final n = [
+  Node(label: 'Q0', position: Point(100, 300)),
+  Node(label: 'Q1', position: Point(280, 300)),
+].asMap().map((key, node) => MapEntry(node.label, node));
+
+final n0 = n.values.toList()[0];
+final n1 = n.values.toList()[1];
+final l = [
+  Link(from: n0, to: n1, label: 'a'),
+].asMap().map((key, link) => MapEntry(link.id, link));
 @injectable
 class CanvasCubit extends Cubit<CanvasState> {
   final ICanvasRepository repository;
   final TransformationController transform = TransformationController();
 
-  CanvasCubit(this.repository) : super(CanvasState());
+  // CanvasCubit(this.repository) : super(CanvasState(nodes: {}, links: {}));
+  CanvasCubit(this.repository) : super(CanvasState(nodes: n, links: l));
 
   Offset toScene(Offset global) => transform.toScene(global);
   TransformationController getTransformationController() => transform;
@@ -69,6 +80,11 @@ class CanvasCubit extends Cubit<CanvasState> {
 
   void zoomIn() => zoom(1.1);
   void zoomOut() => zoom(0.9);
+  void resetZoom() {
+    emit(state.copyWith(zoom: 1.0));
+    zoom(1.0);
+  }
+
 
   void pan(Offset delta) {
     const maxW = 500, maxH = 400;
@@ -92,13 +108,14 @@ class CanvasCubit extends Cubit<CanvasState> {
   }
 
   void addNode(Offset position) {
-    final lastLabel = state.nodesList.map((node) => node.label).sorted().last;
-    final newLabel = state.nodes.isEmpty
-        ? 'Q0'
-        : 'Q${int.parse(lastLabel.substring(1)) + 1}';
+    var label = 'Q0';
 
+    if (state.nodes.isNotEmpty) {
+      final lastLabel = state.nodesList.map((node) => node.label).sorted().last;
+      label = 'Q${int.parse(lastLabel.substring(1)) + 1}';
+    }
     Node node = Node(
-      label: newLabel,
+      label: label,
       position: toScene(position).toPoint(),
     ).translate(dx: -kNodeRadius, dy: -kNodeRadius);
 
@@ -125,10 +142,9 @@ class CanvasCubit extends Cubit<CanvasState> {
     );
   }
 
-  // TODO: implementar
   void changeLinkLabel(Link link, String label) {
-    // state.links[link.id]!.label = label;
-    // emit(state);
+    state.links[link.id]!.label = label;
+    emit(state);
   }
 
   void updateTemporaryLink({required Offset end}) {
