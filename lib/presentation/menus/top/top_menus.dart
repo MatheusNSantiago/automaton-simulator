@@ -1,4 +1,3 @@
-import 'package:automata_simulator/constants.dart';
 import 'package:automata_simulator/presentation/menus/components/menu_container.dart';
 import 'package:automata_simulator/presentation/menus/components/vertical_divider.dart';
 import 'package:automata_simulator/presentation/menus/top/file_name.dart';

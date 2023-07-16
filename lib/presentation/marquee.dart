@@ -1,8 +1,8 @@
-import 'package:automata_simulator/presentation/widgets/inline_painter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../application/canvas_cubit/canvas_cubit.dart';
+import 'core/inline_painter.dart';
 
 class Marquee extends StatelessWidget {
   const Marquee({super.key});

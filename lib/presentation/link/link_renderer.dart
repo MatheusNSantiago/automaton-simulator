@@ -1,9 +1,9 @@
 import 'package:automata_simulator/application/canvas_cubit/canvas_cubit.dart';
 import 'package:automata_simulator/domain/geometry/quadratic_bezier.dart';
-import 'package:automata_simulator/presentation/widgets/inline_painter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../core/inline_painter.dart';
 import 'components/arrow.dart';
 import 'components/control_point.dart';
 import 'components/transition.dart';
