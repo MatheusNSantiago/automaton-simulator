@@ -1,6 +1,6 @@
 import 'package:automata_simulator/presentation/menus/components/menu_container.dart';
 import 'package:automata_simulator/presentation/menus/components/vertical_divider.dart';
-import 'package:automata_simulator/presentation/menus/top/file_name.dart';
+import 'package:automata_simulator/presentation/menus/top/file_dropdown.dart';
 import 'package:flutter/material.dart';
 
 import 'hamburger_button.dart';
@@ -20,7 +20,7 @@ class TopMenus extends StatelessWidget {
             children: [
               HamburguerButton(),
               CustomVerticalDivider(),
-              FileName(),
+              FileDropdown(),
             ],
           ),
           Spacer(),
