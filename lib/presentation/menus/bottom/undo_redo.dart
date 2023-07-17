@@ -2,6 +2,7 @@ import 'package:automata_simulator/presentation/menus/components/icon_buttom.dar
 import 'package:automata_simulator/presentation/menus/components/menu_container.dart';
 import 'package:automata_simulator/presentation/menus/components/vertical_divider.dart';
 import 'package:flutter/material.dart';
+import 'package:iconify_flutter/icons/bx.dart';
 
 class UndoRedoMenu extends StatelessWidget {
   const UndoRedoMenu({super.key});
@@ -12,13 +13,13 @@ class UndoRedoMenu extends StatelessWidget {
       children: [
         CustomIconButton(
           onPressed: () {},
-          icon: Icons.undo_rounded,
+          icon: Bx.bx_undo,
           disabled: true,
         ),
         const CustomVerticalDivider(),
         CustomIconButton(
           onPressed: () {},
-          icon: Icons.redo_rounded,
+          icon: Bx.bx_redo,
         ),
       ],
     );

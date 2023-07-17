@@ -4,6 +4,8 @@ import 'package:automata_simulator/presentation/menus/components/menu_container.
 import 'package:automata_simulator/presentation/menus/components/vertical_divider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:iconify_flutter/icons/ant_design.dart';
+
 
 class ZoomMenu extends StatelessWidget {
   const ZoomMenu({super.key});
@@ -19,7 +21,8 @@ class ZoomMenu extends StatelessWidget {
           children: [
             CustomIconButton(
               onPressed: canvas.zoomOut,
-              icon: Icons.remove_rounded,
+              icon: AntDesign.minus,
+              iconSize: 18,
             ),
             const CustomVerticalDivider(),
             Padding(
@@ -32,7 +35,8 @@ class ZoomMenu extends StatelessWidget {
             const CustomVerticalDivider(),
             CustomIconButton(
               onPressed: canvas.zoomIn,
-              icon: Icons.add_rounded,
+              icon: AntDesign.plus,
+              iconSize: 18,
             ),
           ],
         );

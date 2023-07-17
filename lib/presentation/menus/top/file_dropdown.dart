@@ -1,6 +1,9 @@
 import 'package:automata_simulator/constants.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
+import 'package:iconify_flutter/iconify_flutter.dart';
+import 'package:iconify_flutter/icons/fe.dart';
+
 
 class FileDropdown extends StatefulWidget {
   const FileDropdown({super.key});
@@ -119,7 +122,7 @@ class DropdownButtonPreClick extends StatelessWidget {
               selectedItem,
               style: const TextStyle(fontSize: 14.5),
             ),
-            const Icon(Icons.arrow_drop_down),
+            const Iconify(Fe.arrow_down, color: Colors.white, size: 14,),
           ],
         ),
       ),

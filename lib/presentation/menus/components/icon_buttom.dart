@@ -1,14 +1,15 @@
 import 'package:automata_simulator/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:iconify_flutter/iconify_flutter.dart';
 
 class CustomIconButton extends StatelessWidget {
-  final Function()? onPressed;
-  final IconData icon;
+  final Function() onPressed;
+  final String icon;
   final double iconSize;
   final bool disabled;
 
   const CustomIconButton({
-    this.onPressed,
+    required this.onPressed,
     required this.icon,
     this.iconSize = 20,
     this.disabled = false,
@@ -19,7 +20,7 @@ class CustomIconButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return IconButton(
       onPressed: onPressed,
-      icon: Icon(icon, color: disabled ? kFaintTextColor : Colors.white),
+      icon: Iconify(icon, size: iconSize, color: disabled ? kFaintTextColor : Colors.white),
       color: disabled ? kFaintTextColor : Colors.white,
       iconSize: iconSize,
       style: ButtonStyle(
