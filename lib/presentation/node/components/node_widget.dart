@@ -21,6 +21,10 @@ class NodeWidget extends StatelessWidget {
         decoration: BoxDecoration(
           color: node.color,
           shape: BoxShape.circle,
+          border: Border.all(
+            color: colors.onSurface.withOpacity(0.3),
+            width: 1,
+          ),
           boxShadow: [
             BoxShadow(
               offset: const Offset(0.8, 0.8),
