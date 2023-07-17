@@ -6,7 +6,6 @@ class MouseState {
   final bool isSecondaryDown;
   bool get isPrimaryUp => !isPrimaryDown;
   bool get isSecondaryUp => !isSecondaryDown;
-  bool get isDown => isPrimaryDown && isSecondaryDown;
   bool get isUp => isPrimaryUp && isSecondaryUp;
 
   const MouseState({

@@ -12,23 +12,12 @@ import 'package:injectable/injectable.dart';
 import '../../utils.dart';
 part 'canvas_state.dart';
 
-final n = [
-  Node(label: 'Q0', position: Point(100, 300)),
-  Node(label: 'Q1', position: Point(280, 300)),
-].asMap().map((key, node) => MapEntry(node.label, node));
-
-final n0 = n.values.toList()[0];
-final n1 = n.values.toList()[1];
-final l = [
-  Link(from: n0, to: n1, label: 'a'),
-].asMap().map((key, link) => MapEntry(link.id, link));
 @injectable
 class CanvasCubit extends Cubit<CanvasState> {
   final ICanvasRepository repository;
   final TransformationController transform = TransformationController();
 
-  // CanvasCubit(this.repository) : super(CanvasState(nodes: {}, links: {}));
-  CanvasCubit(this.repository) : super(CanvasState(nodes: n, links: l));
+  CanvasCubit(this.repository) : super(CanvasState(nodes: {}, links: {}));
 
   Offset toScene(Offset global) => transform.toScene(global);
   TransformationController getTransformationController() => transform;

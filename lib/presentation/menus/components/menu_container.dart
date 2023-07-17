@@ -13,7 +13,7 @@ class MenuContainer extends StatelessWidget {
       decoration: BoxDecoration(
         color: kButtonColor,
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: const Color(0XFF828282), width: 0.2),
+        border: Border.all(color: kButtonBorderColor, width: 0.2),
       ),
       child: Row(
         children: children,
