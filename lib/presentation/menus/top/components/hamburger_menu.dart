@@ -2,15 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
 import 'package:iconify_flutter/icons/ri.dart';
 
-
+import '../../../auth/signup.dart';
 import '../../components/menu_container.dart';
 
 class HamburgerMenu extends StatelessWidget {
   final VoidCallback onTapOutside;
-  const HamburgerMenu({
-    required this.onTapOutside,
-    super.key,
-  });
+  const HamburgerMenu({required this.onTapOutside, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +29,12 @@ class HamburgerMenu extends StatelessWidget {
             const Divider(thickness: 0.1),
             HamburgerMenuItem(
               label: "Entrar",
-              onPressed: () {},
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) => const SignupModal(),
+                );
+              },
               icon: Ri.login_box_line,
               size: 20,
             ),

@@ -31,6 +31,9 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           colorScheme: const ColorScheme.dark(onSurface: Colors.white),
+          textTheme: const TextTheme(
+            headlineLarge: TextStyle(fontWeight: FontWeight.bold),
+          ),
           useMaterial3: true,
         ),
         home: const Scaffold(
