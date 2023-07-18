@@ -20,7 +20,7 @@ class CustomIconButton extends StatelessWidget {
     this.iconSize = 20,
     this.disabled = false,
     this.label,
-    this.textStyle = const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+    this.textStyle = const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
     this.iconPosition = IconPosition.right,
     this.padding = 5,
     super.key,

@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
 import 'package:iconify_flutter/icons/fe.dart';
 
-
 class FileDropdown extends StatefulWidget {
   const FileDropdown({super.key});
 
@@ -13,6 +12,14 @@ class FileDropdown extends StatefulWidget {
 }
 
 class _FileDropdownState extends State<FileDropdown> {
+  late FocusScopeNode focusNode;
+
+  @override
+  void initState() {
+    focusNode = FocusScopeNode();
+    super.initState();
+  }
+
   final Map<String, bool> items = {
     'Exercício 1': true,
     'Exercício 2': true,
@@ -29,36 +36,39 @@ class _FileDropdownState extends State<FileDropdown> {
   Widget build(BuildContext context) {
     return DropdownButtonHideUnderline(
       child: DropdownButton2(
+        onMenuStateChange: (isOpen) {
+          if (!isOpen) {
+            focusNode.unfocus(disposition: UnfocusDisposition.previouslyFocusedChild);
+          }
+        },
+        focusNode: focusNode,
         customButton: DropdownButtonPreClick(selectedItem: selectedItem),
         items: items.keys.map((item) {
           final isSelected = selectedItem == item;
           final wasSubmitted = items[item]!;
 
           return DropdownMenuItem(
-              enabled: !isSelected,
               onTap: () => setState(() => selectedItem = item),
               value: item,
               child: InkWell(
+                mouseCursor: isSelected
+                    ? SystemMouseCursors.basic
+                    : SystemMouseCursors.click,
                 child: Container(
                   height: double.infinity,
                   padding: const EdgeInsets.symmetric(horizontal: 13.0),
                   decoration: BoxDecoration(
-                    border: isSelected
-                        ? const Border(
-                            left: BorderSide(color: kNodeColor, width: 2))
-                        : null,
+                    color: isSelected
+                        ? const Color(0xFF2f2f2f)
+                        : Colors.transparent,
                   ),
                   child: Row(
                     children: [
                       Expanded(
                         child: Text(
                           item,
-                          style: TextStyle(
-                            fontSize: 15,
-                            color: (wasSubmitted || isSelected)
-                                ? Colors.white
-                                : kFaintTextColor,
-                          ),
+                          style: const TextStyle(
+                              fontSize: 15, color: Colors.white),
                         ),
                       ),
                       const SizedBox(width: 16),
@@ -99,6 +109,12 @@ class _FileDropdownState extends State<FileDropdown> {
       ),
     );
   }
+
+  @override
+  void dispose() {
+    focusNode.dispose();
+    super.dispose();
+  }
 }
 
 class DropdownButtonPreClick extends StatelessWidget {
@@ -122,7 +138,11 @@ class DropdownButtonPreClick extends StatelessWidget {
               selectedItem,
               style: const TextStyle(fontSize: 14.5),
             ),
-            const Iconify(Fe.arrow_down, color: Colors.white, size: 14,),
+            const Iconify(
+              Fe.arrow_down,
+              color: Colors.white,
+              size: 14,
+            ),
           ],
         ),
       ),

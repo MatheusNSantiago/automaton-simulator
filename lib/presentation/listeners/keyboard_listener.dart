@@ -22,12 +22,14 @@ class _CanvasKeyboardListenerState extends State<CanvasKeyboardListener> {
     super.initState();
     focusNode = FocusScopeNode();
     focusNode.requestFocus();
-  }
 
-  @override
-  void dispose() {
-    focusNode.dispose();
-    super.dispose();
+    focusNode.addListener(() {
+      // if (focusNode.hasFocus) {
+      //   print("has focus");
+      // } else {
+      //   print("lost focus");
+      // }
+    });
   }
 
   @override
@@ -37,9 +39,12 @@ class _CanvasKeyboardListenerState extends State<CanvasKeyboardListener> {
 
     return Shortcuts(
       shortcuts: <ShortcutActivator, Intent>{
-        const SingleActivator(LogicalKeyboardKey.equal, control: true): VoidCallbackIntent(canvas.zoomIn),
-        const SingleActivator(LogicalKeyboardKey.minus, control: true): VoidCallbackIntent(canvas.zoomOut),
-        const SingleActivator(LogicalKeyboardKey.digit0, control: true): VoidCallbackIntent(canvas.resetZoom),
+        const SingleActivator(LogicalKeyboardKey.equal, control: true):
+            VoidCallbackIntent(canvas.zoomIn),
+        const SingleActivator(LogicalKeyboardKey.minus, control: true):
+            VoidCallbackIntent(canvas.zoomOut),
+        const SingleActivator(LogicalKeyboardKey.digit0, control: true):
+            VoidCallbackIntent(canvas.resetZoom),
       },
       child: KeyboardListener(
         focusNode: focusNode,
@@ -84,5 +89,11 @@ class _CanvasKeyboardListenerState extends State<CanvasKeyboardListener> {
         child: widget.child,
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    focusNode.dispose();
+    super.dispose();
   }
 }

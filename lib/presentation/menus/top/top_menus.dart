@@ -1,3 +1,4 @@
+import 'package:automata_simulator/constants.dart';
 import 'package:automata_simulator/presentation/menus/components/icon_buttom.dart';
 import 'package:automata_simulator/presentation/menus/components/menu_container.dart';
 import 'package:automata_simulator/presentation/menus/components/vertical_divider.dart';
@@ -20,6 +21,7 @@ class _TopMenusState extends State<TopMenus> {
 
   void toggleMenu() => setState(() => _isMenuOpen = !_isMenuOpen);
   void closeMenu() => setState(() => _isMenuOpen = false);
+  void openMenu() => setState(() => _isMenuOpen = true);
 
   @override
   Widget build(BuildContext context) {
@@ -33,20 +35,26 @@ class _TopMenusState extends State<TopMenus> {
             children: [
               MenuContainer(
                 children: [
-                  CustomIconButton(icon: Ci.hamburger, onPressed: toggleMenu),
+                  CustomIconButton(
+                    icon: Ci.hamburger,
+                    onPressed: toggleMenu,
+                  ),
                   const CustomVerticalDivider(),
                   const FileDropdown(),
                 ],
               ),
               const Spacer(),
-              MenuContainer(children: [
-                CustomIconButton(
-                  icon: Carbon.send_filled,
-                  iconSize: 15,
-                  label: "Enviar",
-                  onPressed: () {},
-                ),
-              ]),
+              MenuContainer(
+                backgroundColor: kPrimaryColor,
+                children: [
+                  CustomIconButton(
+                    icon: Carbon.send_filled,
+                    iconSize: 15,
+                    label: "Enviar",
+                    onPressed: () {},
+                  )
+                ],
+              ),
             ],
           ),
           if (_isMenuOpen) HamburgerMenu(onTapOutside: closeMenu),
@@ -55,4 +63,3 @@ class _TopMenusState extends State<TopMenus> {
     );
   }
 }
-

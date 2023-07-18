@@ -10,7 +10,7 @@ class MenuContainer extends StatelessWidget {
   final double? width;
   final MenuContainerType type;
   final EdgeInsetsGeometry? padding;
-
+  final Color backgroundColor;
 
   const MenuContainer({
     required this.children,
@@ -18,6 +18,7 @@ class MenuContainer extends StatelessWidget {
     this.width,
     this.type = MenuContainerType.row,
     this.padding,
+    this.backgroundColor = kButtonColor,
     super.key,
   });
 
@@ -28,7 +29,7 @@ class MenuContainer extends StatelessWidget {
       width: width,
       padding: padding,
       decoration: BoxDecoration(
-        color: kButtonColor,
+        color: backgroundColor,
         borderRadius: BorderRadius.circular(kButtonBorderRadius),
         border: Border.all(color: kButtonBorderColor, width: 0.2),
         boxShadow: [
