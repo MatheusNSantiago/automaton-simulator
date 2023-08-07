@@ -14,31 +14,28 @@ class NodeRenderer extends StatelessWidget {
     final canvas = context.read<CanvasCubit>();
 
     return BlocBuilder<CanvasCubit, CanvasState>(
-      buildWhen: (p, c) => p.nodesList != c.nodesList,
       builder: (context, state) {
         return CustomMultiChildLayout(
-          delegate: CanvasNodesDelegate(state.nodesList),
-          children: state.nodesList
-              .map((node) {
-                final isSelected = canvas.isNodeSelected(node);
-                final isHovered = canvas.isNodeHovered(node);
+          delegate: CanvasNodesDelegate(state.nodes.toList()),
+          children: state.nodes.map((node) {
+            final isSelected = canvas.isNodeSelected(node);
+            final isHovered = canvas.isNodeHovered(node);
 
-                return LayoutId(
-                  key: ValueKey(node.label),
-                  id: node,
-                  child: SizedBox.fromSize(
-                    size: node.size,
-                    child: Stack(
-                      clipBehavior: Clip.none,
-                      children: [
-                        if (isSelected || isHovered)
-                          SelectionBox(node: node, isSelected: isSelected),
-                        NodeWidget(node: node)
-                      ],
-                    ),
-                  ));
-              })
-              .toList(),
+            return LayoutId(
+                key: ValueKey(node.label),
+                id: node,
+                child: SizedBox.fromSize(
+                  size: node.size,
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      if (isSelected || isHovered)
+                        SelectionBox(node: node, isSelected: isSelected),
+                      NodeWidget(node: node)
+                    ],
+                  ),
+                ));
+          }).toList(),
         );
       },
     );

@@ -3,7 +3,7 @@ part of 'canvas_cubit.dart';
 class CanvasState {
   final Set<String> selected;
   final Set<String> hovered;
-  final Map<String, Node> nodes;
+  final NodeList nodes;
   final Map<String, Link> links;
   final double zoom;
 
@@ -15,7 +15,7 @@ class CanvasState {
   CanvasState({
     this.selected = const {},
     this.hovered = const {},
-    required this.nodes,
+    this.nodes = NodeList.empty,
     required this.links,
     this.zoom = 1,
     this.marqueeStart,
@@ -28,11 +28,10 @@ class CanvasState {
   bool get isMarqueeActive => marqueeStart != null && marqueeEnd != null;
   bool get isTemporaryLinkActive => linkStart != null && linkEnd != null;
 
-  List<Node> get nodesList => nodes.values.toList();
   List<Link> get linkList => links.values.toList();
 
   CanvasState copyWith({
-    Map<String, Node>? nodes,
+    NodeList? nodes,
     Map<String, Link>? links,
     Set<String>? selected,
     Set<String>? hovered,

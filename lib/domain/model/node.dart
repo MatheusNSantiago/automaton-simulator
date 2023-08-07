@@ -16,7 +16,6 @@ class Node {
 
   Rect get rect => position.toOffset() & size;
   Point get center => Point.fromOffset(rect.center);
-
   double get x => center.x;
   double get y => center.y;
 
@@ -24,6 +23,8 @@ class Node {
     position = position.translate(dx: dx, dy: dy);
     return this;
   }
+
+  bool contains(Offset offset) => rect.contains(offset);
 
   Map<String, dynamic> toJson() => {
         'position': position.toJson(),

@@ -1,9 +1,10 @@
+import 'package:automata_simulator/domain/collections/node_list.dart';
 import 'package:automata_simulator/domain/model/link.dart';
 
 import '../model/node.dart';
 
 class Canvas {
-  final Map<String, Node> nodes;
+  final NodeList nodes;
   final Map<String, Link> links;
   final String name;
 
@@ -13,13 +14,12 @@ class Canvas {
     this.name = "Teste",
   });
 
-  List<Node> get nodeList => nodes.values.toList();
   List<Link> get linkList => links.values.toList();
 
-  factory Canvas.empty() => Canvas(nodes: {}, links: {});
+  factory Canvas.empty() => Canvas(nodes: NodeList.empty, links: {});
 
   Map<String, dynamic> toJson() {
-    final nodes = nodeList.map((node) => node.toJson()).toList();
+    final nodes = this.nodes.map((node) => node.toJson()).toList();
     final links = linkList.map((link) => link.toJson()).toList();
 
     return {
@@ -43,7 +43,7 @@ class Canvas {
     }
 
     return Canvas(
-      nodes: nodes,
+      nodes: NodeList(nodes),
       links: links,
       name: json['canvasName'],
     );

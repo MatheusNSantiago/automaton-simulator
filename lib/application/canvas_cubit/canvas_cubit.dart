@@ -1,11 +1,10 @@
-import 'package:automata_simulator/constants.dart';
 import 'package:automata_simulator/domain/canvas/canvas.dart';
 import 'package:automata_simulator/domain/canvas/i_canvas_repository.dart';
+import 'package:automata_simulator/domain/collections/node_list.dart';
 import 'package:automata_simulator/domain/geometry/point.dart';
 import 'package:automata_simulator/domain/model/link.dart';
 import 'package:automata_simulator/domain/model/node.dart';
 import 'package:bloc/bloc.dart';
-import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
 
@@ -17,7 +16,8 @@ class CanvasCubit extends Cubit<CanvasState> {
   final ICanvasRepository repository;
   final TransformationController transform = TransformationController();
 
-  CanvasCubit(this.repository) : super(CanvasState(nodes: {}, links: {}));
+  CanvasCubit(this.repository)
+      : super(CanvasState(nodes: NodeList.empty, links: {}));
 
   Offset toScene(Offset global) => transform.toScene(global);
   TransformationController getTransformationController() => transform;
@@ -74,7 +74,6 @@ class CanvasCubit extends Cubit<CanvasState> {
     zoom(1.0);
   }
 
-
   void pan(Offset delta) {
     const maxW = 500, maxH = 400;
     final matrix = transform.value.clone();
@@ -97,19 +96,9 @@ class CanvasCubit extends Cubit<CanvasState> {
   }
 
   void addNode(Offset position) {
-    var label = 'Q0';
-
-    if (state.nodes.isNotEmpty) {
-      final lastLabel = state.nodesList.map((node) => node.label).sorted().last;
-      label = 'Q${int.parse(lastLabel.substring(1)) + 1}';
-    }
-    Node node = Node(
-      label: label,
-      position: toScene(position).toPoint(),
-    ).translate(dx: -kNodeRadius, dy: -kNodeRadius);
-
-    state.nodes[node.label] = node;
-    emit(state);
+    final point = toScene(position).toPoint();
+    state.nodes.addNode(point);
+    emit(state.copyWith(nodes: state.nodes));
   }
 
   // ╭──────────────────────────────────────────────────────────╮
@@ -197,7 +186,7 @@ class CanvasCubit extends Cubit<CanvasState> {
       toScene(state.marqueeEnd!),
     );
 
-    for (final node in state.nodesList) {
+    for (final node in state.nodes) {
       if (rect.overlaps(node.rect)) {
         selection.add(node.label);
       }
@@ -215,19 +204,15 @@ class CanvasCubit extends Cubit<CanvasState> {
   bool isNodeHovered(Node node) => state.hovered.contains(node.label);
 
   List<Node> getSelectedNodes() {
-    final nodes = <Node>[];
+    final selectedNodes = <Node>[];
     for (final id in state.selected) {
-      if (state.nodes.containsKey(id)) {
-        nodes.add(state.nodes[id]!);
-      }
+      final node = state.nodes.getNodeWithId(id);
+      if (node != null) selectedNodes.add(node);
     }
-    return nodes;
+    return selectedNodes;
   }
 
-  Node? getNodeOnPosition(Offset offset) {
-    return state.nodesList
-        .firstWhereOrNull((node) => node.rect.contains(toScene(offset)));
-  }
+  Node? getNodeOnPosition(Offset offset) => state.nodes.getNodeOnPosition(offset);
 
   void checkSelection(Offset offset, [bool hover = false]) {
     final selection = <String>[];
@@ -243,7 +228,7 @@ class CanvasCubit extends Cubit<CanvasState> {
 
   void moveSelection(Offset delta) {
     for (final id in state.selected) {
-      final node = state.nodes[id];
+      final node = state.nodes.getNodeWithId(id);
       if (node == null) continue;
 
       node.translate(dx: delta.dx / state.zoom, dy: delta.dy / state.zoom);
